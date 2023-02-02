@@ -1098,22 +1098,26 @@ def sysinfo():
     """
     get system information
     """
-
+    strings = []
     # processor_info
     model_name = getoutput("grep -E 'model name' /proc/cpuinfo -m 1").split(":")[-1]
     print(f"Processor:{model_name}")
+    strings.append(f"Processor:{model_name}")
 
     # get core count
     total_cpu_count = int(getoutput("nproc"))
     print("Cores:", total_cpu_count)
+    #strings.append("Cores:", total_cpu_count)
 
     # get architecture
     cpu_arch = pl.machine()
     print("Architecture:", cpu_arch)
+    #strings.append("Architecture:", cpu_arch)
 
     # get driver
     driver = getoutput("cpufreqctl.auto-cpufreq --driver")
     print("Driver: " + driver)
+    #6strings.append("Driver: " + driver)
 
     # get usage and freq info of cpus
     usage_per_cpu = psutil.cpu_percent(interval=1, percpu=True)
