@@ -2,12 +2,13 @@ import gi
 
 gi.require_version("Gtk", "3.0")
 
-from gi.repository import Gtk
-from gi.repository import GLib
+from gi.repository import Gtk, GLib, Gdk, Gio
 
 import os
 
 from objects import RadioButtonView, SystemStatsLabel, CPUFreqStatsLabel, CurrentGovernorBox
+
+CSS_FILE = "styles.css"
 
 HBOX_PADDING = 20
 
@@ -16,6 +17,8 @@ class MyWindow(Gtk.Window):
         super().__init__(title="auto-cpufreq")
         self.set_default_size(640, 480)
         self.set_border_width(10)
+
+        self.load_css()
 
         settings = Gtk.Settings.get_default()
         # Theme
@@ -41,6 +44,13 @@ class MyWindow(Gtk.Window):
         self.hbox.pack_start(self.vbox, False, False, 0)
 
         GLib.timeout_add_seconds(2, self.refresh)
+
+    def load_css(self):
+        screen = Gdk.Screen.get_default()
+        self.gtk_provider = Gtk.CssProvider()
+        self.gtk_context = Gtk.StyleContext()
+        self.gtk_context.add_provider_for_screen(screen, self.gtk_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        self.gtk_provider.load_from_file(Gio.File.new_for_path(CSS_FILE))
 
     def refresh(self):
         self.systemstats.refresh()
