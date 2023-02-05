@@ -5,8 +5,10 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GLib, Gdk, Gio
 
 import os
+import sys
 
-from objects import RadioButtonView, SystemStatsLabel, CPUFreqStatsLabel, CurrentGovernorBox
+sys.path.append("../")
+from auto_cpufreq.gui.objects import RadioButtonView, SystemStatsLabel, CPUFreqStatsLabel, CurrentGovernorBox
 
 CSS_FILE = "styles.css"
 
@@ -18,7 +20,7 @@ class MyWindow(Gtk.Window):
         self.set_default_size(640, 480)
         self.set_border_width(10)
 
-        self.load_css()
+        #self.load_css()
 
         settings = Gtk.Settings.get_default()
         # Theme
