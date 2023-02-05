@@ -10,7 +10,7 @@ import sys
 sys.path.append("../")
 from auto_cpufreq.gui.objects import RadioButtonView, SystemStatsLabel, CPUFreqStatsLabel, CurrentGovernorBox
 
-CSS_FILE = "styles.css"
+CSS_FILE = "/usr/local/share/auto-cpufreq/scripts/style.css"
 
 HBOX_PADDING = 20
 
@@ -20,7 +20,7 @@ class MyWindow(Gtk.Window):
         self.set_default_size(640, 480)
         self.set_border_width(10)
 
-        #self.load_css()
+        self.load_css()
 
         settings = Gtk.Settings.get_default()
         # Theme
