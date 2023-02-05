@@ -8,7 +8,8 @@ import sys
 import os
 
 sys.path.append("../../")
-from auto_cpufreq.core import sysinfo, distro_info, getoutput, set_override, get_override
+from subprocess import getoutput
+from auto_cpufreq.core import sysinfo, distro_info, set_override, get_override
 
 from io import StringIO
 
@@ -63,7 +64,6 @@ class RadioButtonView(Gtk.Box):
                 self.performance.set_active(True)
             case "default":
                 self.default.set_active(True)
-
 
 class CurrentGovernorBox(Gtk.Box):
     def __init__(self):

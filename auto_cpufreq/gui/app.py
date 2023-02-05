@@ -28,6 +28,8 @@ class MyWindow(Gtk.Window):
 
         # main HBOX
         self.hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=HBOX_PADDING)
+        self.hbox.set_valign(Gtk.Align.CENTER)
+        self.hbox.set_halign(Gtk.Align.CENTER)
         self.add(self.hbox)
        
         self.systemstats = SystemStatsLabel()
