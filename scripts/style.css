@@ -3,6 +3,14 @@ label{
     font-size: 15px;
 }
 
+#bold{
+    font-weight: bold;
+}
+
+#small{
+    font-size: 12px;
+}
+
 button.popup{
     background-image: none;
     background-color: white;

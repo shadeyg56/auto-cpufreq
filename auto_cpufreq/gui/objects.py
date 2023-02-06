@@ -6,10 +6,11 @@ from gi.repository import Gtk, GdkPixbuf
 
 import sys
 import os
+import platform as pl
 
 sys.path.append("../../")
-from subprocess import getoutput
-from auto_cpufreq.core import sysinfo, distro_info, set_override, get_override
+from subprocess import getoutput, call
+from auto_cpufreq.core import sysinfo, distro_info, set_override, get_override, get_formatted_version, dist_name
 
 from io import StringIO
 
@@ -24,6 +25,25 @@ def get_stats():
         with open(auto_cpufreq_stats_path, "r") as file:
             stats = [line for line in (file.readlines() [-50:])]
         return "".join(stats)
+
+def get_version():
+    # snap package
+    if os.getenv("PKG_MARKER") == "SNAP":
+        return getoutput("echo \(Snap\) $SNAP_VERSION")
+    # aur package
+    elif dist_name in ["arch", "manjaro", "garuda"]:
+        aur_pkg_check = call("pacman -Qs auto-cpufreq > /dev/null", shell=True)
+        if aur_pkg_check == 1:
+            return get_formatted_version()
+        else:
+            return getoutput("pacman -Qi auto-cpufreq | grep Version")
+    else:
+        # source code (auto-cpufreq-installer)
+        try:
+            return get_formatted_version()
+        except Exception as e:
+            print(repr(e))
+            pass
 
 
 class RadioButtonView(Gtk.Box):
@@ -151,10 +171,24 @@ class DropDownMenu(Gtk.MenuButton):
 class AboutDialog(Gtk.Dialog):
     def __init__(self, parent):
         super().__init__(title="About", transient_for=parent)
+        app_version = get_version()
         self.box = self.get_content_area()
+        # self.box.set_homogeneous(True)
+        self.box.set_spacing(10)
         self.add_button("Close", Gtk.ResponseType.CLOSE)
-        self.set_default_size(150, 100)
+        self.set_default_size(400, 350)
 
-        label = Gtk.Label("Hello World")
-        self.box.pack_start(label, False, False, 0)
+        self.title = Gtk.Label(label="auto-cpufreq", name="bold")
+        self.version = Gtk.Label(label=app_version)
+        self.python = Gtk.Label(label=f"Python {pl.python_version()}")
+        self.github = Gtk.Label(label="https://github.com/AdnanHodzic/auto-cpufreq")
+        self.license = Gtk.Label(label="Licensed under LGPL3", name="small")
+        self.love = Gtk.Label(label="Made with <3", name="small")
+
+        self.box.pack_start(self.title, False, False, 0)
+        self.box.pack_start(self.version, False, False, 0)
+        self.box.pack_start(self.python, False, False, 0)
+        self.box.pack_start(self.github, False, False, 0)
+        self.box.pack_start(self.license, False, False, 0)
+        self.box.pack_start(self.love, False, False, 0)
         self.show_all()
