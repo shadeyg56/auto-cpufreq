@@ -2,7 +2,7 @@ import gi
 
 gi.require_version("Gtk", "3.0")
 
-from gi.repository import Gtk
+from gi.repository import Gtk, GdkPixbuf
 
 import sys
 import os
@@ -115,3 +115,46 @@ class CPUFreqStatsLabel(Gtk.Label):
             del stats[-4:]
             self.set_label("\n".join(stats))
  
+class DropDownMenu(Gtk.MenuButton):
+    def __init__(self, parent):
+        super().__init__()
+        self.set_halign(Gtk.Align.END)
+        img_buffer = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                    filename="/usr/local/share/auto-cpufreq/images/menu.png",
+                    width=25,
+                    height=25,
+                    preserve_aspect_ratio=True)
+        self.image = Gtk.Image.new_from_pixbuf(img_buffer)
+        self.add(self.image)
+        self.menu = self.build_menu(parent)
+        self.set_popup(self.menu)
+
+    def build_menu(self, parent):
+        menu = Gtk.Menu()
+
+        daemon = Gtk.MenuItem(label="Remove Daemon")
+        menu.append(daemon)
+
+        about = Gtk.MenuItem(label="About")
+        about.connect("activate", self.about_dialog, parent)
+        menu.append(about)
+
+        menu.show_all()
+        return menu
+
+    def about_dialog(self, MenuItem, parent):
+        dialog = AboutDialog(parent)
+        response = dialog.run()
+        dialog.destroy()
+
+
+class AboutDialog(Gtk.Dialog):
+    def __init__(self, parent):
+        super().__init__(title="About", transient_for=parent)
+        self.box = self.get_content_area()
+        self.add_button("Close", Gtk.ResponseType.CLOSE)
+        self.set_default_size(150, 100)
+
+        label = Gtk.Label("Hello World")
+        self.box.pack_start(label, False, False, 0)
+        self.show_all()

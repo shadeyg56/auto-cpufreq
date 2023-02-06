@@ -2,3 +2,8 @@ label{
     font-family: Noto Sans;
     font-size: 15px;
 }
+
+button.popup{
+    background-image: none;
+    background-color: white;
+}

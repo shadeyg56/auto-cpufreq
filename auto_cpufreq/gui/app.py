@@ -8,7 +8,7 @@ import os
 import sys
 
 sys.path.append("../")
-from auto_cpufreq.gui.objects import RadioButtonView, SystemStatsLabel, CPUFreqStatsLabel, CurrentGovernorBox
+from auto_cpufreq.gui.objects import RadioButtonView, SystemStatsLabel, CPUFreqStatsLabel, CurrentGovernorBox, DropDownMenu
 
 CSS_FILE = "/usr/local/share/auto-cpufreq/scripts/style.css"
 
@@ -38,6 +38,10 @@ class MyWindow(Gtk.Window):
         self.hbox.pack_start(self.systemstats, False, False, 0)
 
         self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        
+        self.menu = DropDownMenu(self)
+        self.vbox.pack_start(self.menu, False, False, 0)
+        
         self.currentgovernor = CurrentGovernorBox()
         self.vbox.pack_start(self.currentgovernor, False, False, 0)
         self.vbox.pack_start(RadioButtonView(), False, False, 0)
@@ -47,7 +51,7 @@ class MyWindow(Gtk.Window):
 
         self.hbox.pack_start(self.vbox, False, False, 0)
 
-        GLib.timeout_add_seconds(2, self.refresh)
+        GLib.timeout_add_seconds(5, self.refresh)
 
     def load_css(self):
         screen = Gdk.Screen.get_default()
