@@ -10,7 +10,7 @@ import platform as pl
 
 sys.path.append("../../")
 from subprocess import getoutput, call
-from auto_cpufreq.core import sysinfo, distro_info, set_override, get_override, get_formatted_version, dist_name
+from auto_cpufreq.core import sysinfo, distro_info, set_override, get_override, get_formatted_version, dist_name, deploy_daemon, remove_daemon
 
 from io import StringIO
 
@@ -48,28 +48,32 @@ def get_version():
 
 class RadioButtonView(Gtk.Box):
     def __init__(self):
-        super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=5)
-        self.set_valign(Gtk.Align.START)
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
 
+        self.set_hexpand(True)
         self.hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
         self.label = Gtk.Label("Governor Override")
 
         self.default = Gtk.RadioButton.new_with_label_from_widget(None, "Default")
         self.default.connect("toggled", self.on_button_toggled,  "reset")
+        self.default.set_halign(Gtk.Align.END)
         self.powersave = Gtk.RadioButton.new_with_label_from_widget(self.default, "Powersave")
         self.powersave.connect("toggled", self.on_button_toggled,  "powersave")
+        self.powersave.set_halign(Gtk.Align.END)
         self.performance = Gtk.RadioButton.new_with_label_from_widget(self.default, "Performance")
         self.performance.connect("toggled", self.on_button_toggled, "performance")
+        self.performance.set_halign(Gtk.Align.END)
         
         self.set_selected()
 
-        self.hbox.pack_start(self.default, False, False, 0)
-        self.hbox.pack_start(self.powersave, False, False, 0)
-        self.hbox.pack_start(self.performance, False, False, 0)
-
         self.pack_start(self.label, False, False, 0)
-        self.pack_start(self.hbox, False, False, 0)
+        self.pack_start(self.default, True, True, 0)
+        self.pack_start(self.powersave, True, True, 0)
+        self.pack_start(self.performance, True, True, 0)
+
+        #self.pack_start(self.label, False, False, 0)
+        #self.pack_start(self.hbox, False, False, 0)
 
     def on_button_toggled(self, button, override):
         if button.get_active():
@@ -87,10 +91,9 @@ class RadioButtonView(Gtk.Box):
 
 class CurrentGovernorBox(Gtk.Box):
     def __init__(self):
-        super().__init__(spacing=60)
-
+        super().__init__(spacing=25)
         self.static = Gtk.Label(label="Current Governor")
-        self.governor = Gtk.Label(label=getoutput("cpufreqctl.auto-cpufreq --governor").strip().split(" ")[0])
+        self.governor = Gtk.Label(label=getoutput("cpufreqctl.auto-cpufreq --governor").strip().split(" ")[0], halign=Gtk.Align.END)
 
         self.pack_start(self.static, False, False, 0)
         self.pack_start(self.governor, False, False, 0)
@@ -120,7 +123,6 @@ class SystemStatsLabel(Gtk.Label):
 class CPUFreqStatsLabel(Gtk.Label):
     def __init__(self):
         super().__init__()
-
         self.update()
   
     def update(self):
@@ -153,6 +155,7 @@ class DropDownMenu(Gtk.MenuButton):
         menu = Gtk.Menu()
 
         daemon = Gtk.MenuItem(label="Remove Daemon")
+        daemon.connect("activate", self._remove_daemon, parent)
         menu.append(daemon)
 
         about = Gtk.MenuItem(label="About")
@@ -166,6 +169,34 @@ class DropDownMenu(Gtk.MenuButton):
         dialog = AboutDialog(parent)
         response = dialog.run()
         dialog.destroy()
+
+    def _remove_daemon(self, MenuItem, parent):
+        confirm = ConfirmDialog(parent, message="Are you sure you want to remove the daemon?")
+        response = confirm.run()
+        confirm.destroy()
+        if response == Gtk.ResponseType.YES:
+            try:
+                remove_daemon()
+                dialog = Gtk.MessageDialog(
+                    transient_for=parent,
+                    message_type=Gtk.MessageType.INFO,
+                    buttons=Gtk.ButtonsType.OK,
+                    text="Daemon succesfully removed"
+                )
+                dialog.format_secondary_text("The app will now close. Please reopen to apply changes")
+                dialog.run()
+                dialog.destroy()
+                parent.destroy()
+            except Exception as e:
+                dialog = Gtk.MessageDialog(
+                    transient_for=parent,
+                    message_type=Gtk.MessageType.ERROR,
+                    buttons=Gtk.ButtonsType.OK,
+                    text="Daemon removal failed"
+                )
+                dialog.format_secondary_text(f"The following error occured:\n{e}")
+                dialog.run()
+                dialog.destroy()
 
 
 class AboutDialog(Gtk.Dialog):
@@ -192,3 +223,51 @@ class AboutDialog(Gtk.Dialog):
         self.box.pack_start(self.license, False, False, 0)
         self.box.pack_start(self.love, False, False, 0)
         self.show_all()
+
+class ConfirmDialog(Gtk.Dialog):
+    def __init__(self, parent, message: str):
+        super().__init__(title="Confirmation", transient_for=parent)
+        self.box = self.get_content_area()
+        self.set_default_size(400, 100)
+        self.add_buttons("Yes", Gtk.ResponseType.YES, "No", Gtk.ResponseType.NO)
+        self.label = Gtk.Label(label=message)
+
+        self.box.pack_start(self.label, True, False, 0)
+
+        self.show_all()
+
+class DaemonNotRunningView(Gtk.Box):
+    def __init__(self, parent):
+        super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=10, halign=Gtk.Align.CENTER, valign=Gtk.Align.CENTER)
+
+        self.label = Gtk.Label(label="auto-cpufreq daemon is not running. Please click the install button")
+        self.install_button = Gtk.Button.new_with_label("Install")
+
+        self.install_button.connect("clicked", self.install_daemon, parent)
+
+        self.pack_start(self.label, False, False, 0)
+        self.pack_start(self.install_button, False, False, 0)
+
+    def install_daemon(self, button, parent):
+        try:
+            deploy_daemon()
+            dialog = Gtk.MessageDialog(
+                transient_for=parent,
+                message_type=Gtk.MessageType.INFO,
+                buttons=Gtk.ButtonsType.OK,
+                text="Daemon succesfully installed"
+            )
+            dialog.format_secondary_text("The app will now close. Please reopen to apply changes")
+            dialog.run()
+            dialog.destroy()
+            parent.destroy()
+        except Exception as e:
+            dialog = Gtk.MessageDialog(
+                transient_for=parent,
+                message_type=Gtk.MessageType.ERROR,
+                buttons=Gtk.ButtonsType.OK,
+                text="Daemon install failed"
+            )
+            dialog.format_secondary_text(f"The following error occured:\n{e}")
+            dialog.run()
+            dialog.destroy()
