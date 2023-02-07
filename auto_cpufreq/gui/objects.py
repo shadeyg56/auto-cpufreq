@@ -53,7 +53,7 @@ class RadioButtonView(Gtk.Box):
         self.set_hexpand(True)
         self.hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
-        self.label = Gtk.Label("Governor Override")
+        self.label = Gtk.Label("Governor Override", name="bold")
 
         self.default = Gtk.RadioButton.new_with_label_from_widget(None, "Default")
         self.default.connect("toggled", self.on_button_toggled,  "reset")
@@ -92,7 +92,7 @@ class RadioButtonView(Gtk.Box):
 class CurrentGovernorBox(Gtk.Box):
     def __init__(self):
         super().__init__(spacing=25)
-        self.static = Gtk.Label(label="Current Governor")
+        self.static = Gtk.Label(label="Current Governor", name="bold")
         self.governor = Gtk.Label(label=getoutput("cpufreqctl.auto-cpufreq --governor").strip().split(" ")[0], halign=Gtk.Align.END)
 
         self.pack_start(self.static, False, False, 0)
@@ -105,9 +105,9 @@ class SystemStatsLabel(Gtk.Label):
     def __init__(self):
         super().__init__()
 
-        self.update()
+        self.refresh()
 
-    def update(self):
+    def refresh(self):
         # change stdout and store label text to file-like object
         old_stdout = sys.stdout
         text = StringIO()
@@ -117,15 +117,13 @@ class SystemStatsLabel(Gtk.Label):
         self.set_label(text.getvalue())
         sys.stdout = old_stdout
     
-    def refresh(self):
-        self.update()
 
 class CPUFreqStatsLabel(Gtk.Label):
     def __init__(self):
         super().__init__()
-        self.update()
+        self.refresh()
   
-    def update(self):
+    def refresh(self):
         stats = get_stats().split("\n")
         start = None
         for i, line in enumerate(stats):

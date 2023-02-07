@@ -81,7 +81,7 @@ class MyWindow(Gtk.Window):
     def refresh(self):
         self.systemstats.refresh()
         self.currentgovernor.refresh()
-
+        self.cpufreqstats.refresh()
         return True
 
 
