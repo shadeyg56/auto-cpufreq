@@ -214,11 +214,14 @@ function tool_remove {
 
   tool_proc_rm="/usr/local/bin/auto-cpufreq --remove"
   wrapper_script="/usr/local/bin/auto-cpufreq"
+  gui_wrapper_script="/usr/local/bin/auto-cpufreq-gtk"
   unit_file="/etc/systemd/system/auto-cpufreq.service"
   venv_path="/opt/auto-cpufreq"
 
   cpufreqctl="/usr/local/bin/cpufreqctl.auto-cpufreq"
   cpufreqctl_old="/usr/bin/cpufreqctl.auto-cpufreq"
+
+  desktop_file="/usr/share/applications/auto-cpufreq-gtk.desktop"
 
   # stop any running auto-cpufreq argument (daemon/live/monitor)
   tool_arg_pids=($(pgrep -f "auto-cpufreq --"))
@@ -252,9 +255,13 @@ function tool_remove {
   [ -f $stats_file ] && rm $stats_file
   [ -f $unit_file ] && rm $unit_file
   [ -f $wrapper_script ] && rm $wrapper_script
-
+  [ -f $gui_wrapper_script ] && rm $gui_wrapper_script
+  
   [ -f $cpufreqctl ] && rm $cpufreqctl
   [ -f $cpufreqctl_old ] && rm $cpufreqctl_old
+
+  [ -f $desktop_file ] && rm $desktop_file
+  update-desktop-database /usr/share/applications
 
   # remove python virtual environment
   rm -rf "${venv_path}"
