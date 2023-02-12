@@ -64,6 +64,7 @@ function install {
   mkdir -p /usr/local/share/auto-cpufreq/
   cp -r scripts/ /usr/local/share/auto-cpufreq/
   cp -r images/ /usr/local/share/auto-cpufreq/
+  cp images/icon.png /usr/share/pixmaps/auto-cpufreq.png
 
   # this is necessary since we need this script before we can run auto-cpufreq itself
   cp scripts/auto-cpufreq-venv-wrapper /usr/local/bin/auto-cpufreq

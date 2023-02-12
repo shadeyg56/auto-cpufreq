@@ -206,7 +206,12 @@ class AboutDialog(Gtk.Dialog):
         self.box.set_spacing(10)
         self.add_button("Close", Gtk.ResponseType.CLOSE)
         self.set_default_size(400, 350)
-
+        img_buffer = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                    filename="/usr/local/share/auto-cpufreq/images/icon.png",
+                    width=150,
+                    height=150,
+                    preserve_aspect_ratio=True)
+        self.image = Gtk.Image.new_from_pixbuf(img_buffer)
         self.title = Gtk.Label(label="auto-cpufreq", name="bold")
         self.version = Gtk.Label(label=app_version)
         self.python = Gtk.Label(label=f"Python {pl.python_version()}")
@@ -214,6 +219,7 @@ class AboutDialog(Gtk.Dialog):
         self.license = Gtk.Label(label="Licensed under LGPL3", name="small")
         self.love = Gtk.Label(label="Made with <3", name="small")
 
+        self.box.pack_start(self.image, False, False, 0)
         self.box.pack_start(self.title, False, False, 0)
         self.box.pack_start(self.version, False, False, 0)
         self.box.pack_start(self.python, False, False, 0)
