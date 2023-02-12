@@ -5,4 +5,12 @@ venv_dir=/opt/auto-cpufreq/venv
 . "${venv_dir}/bin/activate"
 python_command="${venv_dir}/bin/python ${venv_dir}/bin/app.py"
 
-pkexec env DISPLAY=$DISPLAY WAYLAND_DISPLAY=$WAYLAND_DISPLAY XDG_SESSION_TYPE=$XDG_SESSION_TYPE XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR XAUTHORITY=$XAUTHORITY GTK_THEME=$GTK_THEME PATH=$PATH ${python_command}
+if [ "$XDG_SESSION_TYPE" = "wayland" ] ; then
+    # necessary for running on wayland
+    xhost +SI:localuser:root
+    pkexec ${python_command}
+    xhost -SI:localuser:root
+    xhost
+else
+    pkexec ${python_command}
+fi
