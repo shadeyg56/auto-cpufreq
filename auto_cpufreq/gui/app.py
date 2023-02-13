@@ -2,7 +2,7 @@ import gi
 
 gi.require_version("Gtk", "3.0")
 
-from gi.repository import Gtk, GLib, Gdk, Gio
+from gi.repository import Gtk, GLib, Gdk, Gio, GdkPixbuf
 
 import os
 import sys
@@ -22,13 +22,8 @@ class MyWindow(Gtk.Window):
         self.set_border_width(10)
         self.set_resizable(False)
         self.load_css()
-
-        settings = Gtk.Settings.get_default()
-        # Theme
-        theme = os.environ.get("GTK_THEME")
-        # if theme is not None:
-        #     settings.set_property("gtk-theme-name", theme)
-
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(filename="/usr/local/share/auto-cpufreq/images/icon.png", width=500, height=500, preserve_aspect_ratio=True)
+        self.set_icon(pixbuf)
         self.build()
 
     def main(self):
