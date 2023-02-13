@@ -139,7 +139,7 @@ class DropDownMenu(Gtk.MenuButton):
     def __init__(self, parent):
         super().__init__()
         self.set_halign(Gtk.Align.END)
-        self.image = Gtk.Image.new_from_icon_name("open-menu-symbolic", Gtk.IconSize.MENU)
+        self.image = Gtk.Image.new_from_icon_name("open-menu-symbolic", Gtk.IconSize.LARGE_TOOLBAR)
         self.add(self.image)
         self.menu = self.build_menu(parent)
         self.set_popup(self.menu)
