@@ -139,11 +139,6 @@ class DropDownMenu(Gtk.MenuButton):
     def __init__(self, parent):
         super().__init__()
         self.set_halign(Gtk.Align.END)
-        img_buffer = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                    filename="/usr/local/share/auto-cpufreq/images/menu.png",
-                    width=25,
-                    height=25,
-                    preserve_aspect_ratio=True)
         self.image = Gtk.Image.new_from_icon_name("open-menu-symbolic", Gtk.IconSize.MENU)
         self.add(self.image)
         self.menu = self.build_menu(parent)
