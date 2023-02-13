@@ -10,8 +10,3 @@ label{
 #small{
     font-size: 12px;
 }
-
-button.popup{
-    background-image: none;
-    background-color: white;
-}

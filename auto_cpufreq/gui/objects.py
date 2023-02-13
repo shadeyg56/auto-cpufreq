@@ -144,7 +144,7 @@ class DropDownMenu(Gtk.MenuButton):
                     width=25,
                     height=25,
                     preserve_aspect_ratio=True)
-        self.image = Gtk.Image.new_from_pixbuf(img_buffer)
+        self.image = Gtk.Image.new_from_icon_name("open-menu-symbolic", Gtk.IconSize.MENU)
         self.add(self.image)
         self.menu = self.build_menu(parent)
         self.set_popup(self.menu)
