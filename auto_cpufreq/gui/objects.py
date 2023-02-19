@@ -112,8 +112,8 @@ class SystemStatsLabel(Gtk.Label):
         old_stdout = sys.stdout
         text = StringIO()
         sys.stdout = text
-        sysinfo()
         distro_info()
+        sysinfo()
         self.set_label(text.getvalue())
         sys.stdout = old_stdout
     
