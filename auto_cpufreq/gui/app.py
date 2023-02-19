@@ -23,7 +23,7 @@ class MyWindow(Gtk.Window):
         self.set_resizable(False)
         self.load_css()
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(filename="/usr/local/share/auto-cpufreq/images/icon.png", width=500, height=500, preserve_aspect_ratio=True)
-        self.set_icon(pixbuf)
+        #self.set_icon(pixbuf)
         self.build()
 
     def main(self):
@@ -84,4 +84,5 @@ class MyWindow(Gtk.Window):
 win = MyWindow()
 win.connect("destroy", Gtk.main_quit)
 win.show_all()
+GLib.set_application_name("auto-cpufreq")
 Gtk.main()
