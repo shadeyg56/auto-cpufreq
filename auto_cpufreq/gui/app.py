@@ -23,25 +23,26 @@ class MyWindow(Gtk.Window):
         self.set_resizable(False)
         self.load_css()
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(filename="/usr/local/share/auto-cpufreq/images/icon.png", width=500, height=500, preserve_aspect_ratio=True)
-        #self.set_icon(pixbuf)
+        self.set_icon(pixbuf)
         self.build()
 
     def main(self):
-        # main VBOX
-        self.vbox_top = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.vbox_top.set_valign(Gtk.Align.CENTER)
-        self.vbox_top.set_halign(Gtk.Align.CENTER)
-        self.add(self.vbox_top)
+        # self.vbox_top = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        # self.vbox_top.set_valign(Gtk.Align.CENTER)
+        # self.vbox_top.set_halign(Gtk.Align.CENTER)
+        #self.add(self.vbox_top)
 
+        # Main HBOX
         self.hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=HBOX_PADDING)
        
         self.systemstats = SystemStatsLabel()
         self.hbox.pack_start(self.systemstats, False, False, 0)
+        self.add(self.hbox)
 
         self.vbox_right = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
         
         self.menu = DropDownMenu(self)
-        self.vbox_top.pack_start(self.menu, False, False, 0)
+        self.hbox.pack_end(self.menu, False, False, 0)
         
         self.currentgovernor = CurrentGovernorBox()
         self.vbox_right.pack_start(self.currentgovernor, False, False, 0)
@@ -50,7 +51,7 @@ class MyWindow(Gtk.Window):
         self.cpufreqstats = CPUFreqStatsLabel()
         self.vbox_right.pack_start(self.cpufreqstats, False, False, 0)
 
-        self.hbox.pack_start(self.vbox_right, True, True, 0)
+        self.hbox.pack_start(self.vbox_right, False, False, 0)
 
         self.vbox_top.pack_start(self.hbox, False, False, 0)
 
